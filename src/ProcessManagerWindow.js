@@ -1,9 +1,6 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const { onExtendedProcessMetrics } = require('electron-process-reporter');
-const {enable, initialize} = require('@electron/remote/main');
-
-initialize();
 
 class ProcessManagerWindow extends BrowserWindow {
 
@@ -16,7 +13,6 @@ class ProcessManagerWindow extends BrowserWindow {
         nodeIntegration: true,
         webviewTag: true,
         contextIsolation: false,
-        sandbox: false,
       }
     }, options || {});
 
@@ -24,7 +20,6 @@ class ProcessManagerWindow extends BrowserWindow {
     this.options = options;
 
     this.attachProcessReporter();
-    enable(this.webContents);
 
     const indexHtml = 'file://' + path.join(__dirname, '..', 'process-manager.html');
     this.loadURL(indexHtml);
@@ -62,8 +57,14 @@ class ProcessManagerWindow extends BrowserWindow {
 
 
       this.emit('open-dev-tools', webContentsId);
-
     });
+
+    ipcMain.on('process-manager:defaultSorting', (e) => {
+      if (!this || this.isDestroyed()) return;
+      if (e.sender !== this.webContents) return;
+      e.returnValue = this.defaultSorting;
+    });
+
     this.on('closed', () => {
       if (this.subscription) this.subscription.unsubscribe()
     });
