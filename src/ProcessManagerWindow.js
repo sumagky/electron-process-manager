@@ -1,6 +1,9 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const { onExtendedProcessMetrics } = require('electron-process-reporter');
+const {enable, initialize} = require('@electron/remote/main');
+
+initialize();
 
 class ProcessManagerWindow extends BrowserWindow {
 
@@ -12,6 +15,8 @@ class ProcessManagerWindow extends BrowserWindow {
       webPreferences: {
         nodeIntegration: true,
         webviewTag: true,
+        contextIsolation: false,
+        sandbox: false,
       }
     }, options || {});
 
@@ -19,6 +24,7 @@ class ProcessManagerWindow extends BrowserWindow {
     this.options = options;
 
     this.attachProcessReporter();
+    enable(this.webContents);
 
     const indexHtml = 'file://' + path.join(__dirname, '..', 'process-manager.html');
     this.loadURL(indexHtml);

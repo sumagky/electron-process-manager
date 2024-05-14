@@ -1,9 +1,13 @@
 import React from 'react';
-import { ipcRenderer, remote } from 'electron';
+import { ipcRenderer } from 'electron';
+import * as remote from '@electron/remote';
+
 import objectPath from 'object-path';
 
 import ProcessTable from './ProcessTable';
 import ToolBar from './ToolBar';
+
+console.log(remote, ipcRenderer);
 
 export default class ProcessManager extends React.Component {
 
